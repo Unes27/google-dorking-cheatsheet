@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="A modern, searchable Google search operators and authorized site-audit guide by Younes Ait Faraji.">
+  <title>Google Dorking Playbook — Younes Ait Faraji</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --panel: #111a2e;
+      --panel-2: #151f35;
+      --line: #26344d;
+      --text: #edf4ff;
+      --muted: #a3b1c8;
+      --teal: #65e6cf;
+      --blue: #8caeff;
+      --amber: #f4c77c;
+      --rose: #f09aaa;
+      --shadow: 0 22px 70px rgba(0, 0, 0, .28);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(70rem 35rem at 72% -10%, rgba(84, 117, 211, .16), transparent 60%),
+        radial-gradient(40rem 25rem at 0% 26rem, rgba(46, 183, 165, .09), transparent 60%),
+        var(--bg);
+      font: 15px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: inherit; }
+    button, input, select { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .wrap { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+    .topbar { height: 76px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(163, 177, 200, .12); }
+    .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 750; letter-spacing: -.02em; }
+    .brand-mark { display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid rgba(101, 230, 207, .35); border-radius: 12px; color: var(--teal); background: rgba(101, 230, 207, .08); font-size: 12px; letter-spacing: .06em; }
+    .brand small { display: block; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; }
+    .nav { display: flex; align-items: center; gap: 26px; color: var(--muted); font-size: 13px; }
+    .nav a { text-decoration: none; transition: color .18s ease; }
+    .nav a:hover { color: var(--text); }
+    .nav .github-link { padding: 9px 14px; border: 1px solid var(--line); border-radius: 10px; color: var(--text); }
+    .hero { position: relative; padding: 82px 0 46px; overflow: hidden; }
+    .hero:after { content: ""; position: absolute; z-index: -1; width: 520px; height: 520px; top: -70px; right: -90px; border: 1px solid rgba(140, 174, 255, .09); border-radius: 50%; box-shadow: 0 0 0 55px rgba(140,174,255,.025), 0 0 0 110px rgba(140,174,255,.018); }
+    .eyebrow { display: inline-flex; align-items: center; gap: 9px; margin: 0 0 20px; color: var(--teal); font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .eyebrow:before { content: ""; width: 24px; height: 1px; background: currentColor; }
+    h1 { max-width: 780px; margin: 0; font-size: clamp(44px, 7vw, 78px); line-height: .99; letter-spacing: -.065em; }
+    h1 span { color: var(--teal); }
+    .hero-copy { max-width: 670px; margin: 24px 0 0; color: var(--muted); font-size: clamp(16px, 2vw, 19px); }
+    .hero-byline { margin-top: 22px; color: #d6e1f1; font-size: 13px; }
+    .hero-byline a { color: var(--text); font-weight: 700; text-decoration-color: rgba(101,230,207,.6); text-underline-offset: 4px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 30px; }
+    .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 17px; border: 1px solid var(--line); border-radius: 11px; color: var(--text); background: var(--panel); text-decoration: none; cursor: pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease; }
+    .button:hover { transform: translateY(-1px); border-color: #50617d; background: var(--panel-2); }
+    .button.primary { border-color: var(--teal); color: #071615; background: var(--teal); font-weight: 800; }
+    .button.primary:hover { background: #8af3e1; }
+    .hero-metrics { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 42px; }
+    .metric { padding-left: 13px; border-left: 2px solid var(--line); }
+    .metric strong { display: block; font-size: 16px; }
+    .metric span { color: var(--muted); font-size: 11px; }
+    .notice { display: grid; grid-template-columns: 32px 1fr; gap: 13px; margin: 12px 0 55px; padding: 20px 22px; border: 1px solid rgba(244,199,124,.27); border-radius: 16px; background: rgba(244,199,124,.06); }
+    .notice-icon { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 9px; color: var(--amber); background: rgba(244,199,124,.12); font-weight: 900; }
+    .notice strong { display: block; margin-bottom: 3px; color: #ffe2ac; font-size: 13px; }
+    .notice p { margin: 0; color: #c2cbd9; font-size: 13px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 19px; }
+    .section-kicker { margin: 0 0 5px; color: var(--teal); font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h2 { margin: 0; font-size: clamp(25px, 4vw, 35px); letter-spacing: -.04em; line-height: 1.15; }
+    .section-description { max-width: 630px; margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+    .builder { margin-bottom: 76px; padding: clamp(20px, 4vw, 34px); border: 1px solid #2b3a56; border-radius: 24px; background: linear-gradient(145deg, rgba(21,31,53,.98), rgba(15,24,42,.96)); box-shadow: var(--shadow); }
+    .builder-top { display: flex; align-items: start; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+    .builder-tag { flex: 0 0 auto; padding: 6px 10px; border: 1px solid rgba(101,230,207,.25); border-radius: 999px; color: var(--teal); background: rgba(101,230,207,.07); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .fields { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 13px; }
+    .field { min-width: 0; }
+    .field label { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 7px; color: #c8d3e4; font-size: 11px; font-weight: 750; }
+    .field label span { color: #73829a; font-size: 10px; font-weight: 500; }
+    .field input, .field select, .search-input { width: 100%; height: 43px; padding: 0 12px; outline: none; border: 1px solid #30405d; border-radius: 10px; color: var(--text); background: #0d1629; }
+    .field input:focus, .field select:focus, .search-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(101,230,207,.1); }
+    .field input::placeholder, .search-input::placeholder { color: #687891; }
+    .preview-label { display: flex; align-items: center; justify-content: space-between; margin: 21px 0 8px; color: #c8d3e4; font-size: 11px; font-weight: 750; }
+    .preview { min-height: 60px; overflow-wrap: anywhere; padding: 15px 16px; border: 1px solid #263550; border-radius: 12px; color: #b5f4e8; background: #091221; font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .builder-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 14px; }
+    .field-note { margin: 10px 0 0; color: #8291a9; font-size: 11px; }
+    .invalid { color: var(--rose) !important; }
+    .catalog { margin-bottom: 76px; }
+    .catalog-tools { display: grid; grid-template-columns: minmax(190px,1fr) auto; gap: 12px; align-items: center; margin: 23px 0 13px; }
+    .search-wrap { position: relative; }
+    .search-wrap:before { content: "⌕"; position: absolute; left: 14px; top: 7px; color: #8b9ab2; font-size: 23px; }
+    .search-input { height: 48px; padding-left: 43px; }
+    .count { color: var(--muted); font-size: 12px; text-align: right; }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 19px; }
+    .filter { padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: transparent; font-size: 11px; cursor: pointer; }
+    .filter:hover, .filter.active { border-color: rgba(101,230,207,.6); color: var(--teal); background: rgba(101,230,207,.07); }
+    .cards { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+    .card { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: rgba(17,26,46,.82); transition: transform .18s ease, border-color .18s ease, background .18s ease; }
+    .card:hover { transform: translateY(-2px); border-color: #3e5375; background: #131e34; }
+    .card-top { display: flex; align-items: start; justify-content: space-between; gap: 10px; }
+    .card h3 { margin: 0; font-size: 15px; letter-spacing: -.02em; }
+    .badge { flex: 0 0 auto; padding: 4px 7px; border: 1px solid rgba(101,230,207,.2); border-radius: 999px; color: var(--teal); background: rgba(101,230,207,.06); font-size: 9px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+    .badge.varies { border-color: rgba(244,199,124,.23); color: var(--amber); background: rgba(244,199,124,.06); }
+    .badge.image { border-color: rgba(140,174,255,.22); color: var(--blue); background: rgba(140,174,255,.06); }
+    .syntax { display: inline-block; margin: 12px 0 8px; padding: 4px 7px; border-radius: 6px; color: #b7caff; background: rgba(140,174,255,.08); font: 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .card p { min-height: 42px; margin: 0; color: var(--muted); font-size: 12px; }
+    .query { position: relative; margin-top: 13px; padding: 11px 12px; border: 1px solid #263550; border-radius: 9px; color: #c0f4e8; background: #0b1425; font: 11px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+    .card-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .small-button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 32px; padding: 0 10px; border: 1px solid #33425d; border-radius: 8px; color: #d8e3f3; background: transparent; font-size: 10px; font-weight: 700; text-decoration: none; cursor: pointer; }
+    .small-button:hover { border-color: #657996; background: rgba(255,255,255,.04); }
+    .small-button.copy { color: var(--teal); }
+    .empty { grid-column: 1/-1; padding: 34px; border: 1px dashed var(--line); border-radius: 16px; color: var(--muted); text-align: center; }
+    .recipes { margin-bottom: 75px; }
+    .recipe-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 13px; margin-top: 22px; }
+    .recipe { padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: rgba(17,26,46,.7); }
+    .recipe h3 { margin: 0 0 6px; font-size: 15px; }
+    .recipe p { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
+    .recipe code { display: block; overflow-wrap: anywhere; padding: 12px; border: 1px solid #263550; border-radius: 9px; color: #c0f4e8; background: #0b1425; font: 11px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .retired { margin-bottom: 75px; padding: 24px; border: 1px solid rgba(240,154,170,.2); border-radius: 16px; background: rgba(240,154,170,.035); }
+    .retired h2 { font-size: 22px; }
+    .retired p, .retired li { color: var(--muted); font-size: 13px; }
+    .retired ul { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 7px 30px; padding-left: 18px; }
+    .retired code { color: #ffc0cc; }
+    .sources { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 17px; }
+    .source-link { padding: 9px 12px; border: 1px solid var(--line); border-radius: 9px; color: #c9d7eb; background: var(--panel); font-size: 11px; text-decoration: none; }
+    .source-link:hover { border-color: #566b8a; }
+    footer { padding: 26px 0 37px; border-top: 1px solid rgba(163,177,200,.12); color: #7f8ea5; font-size: 11px; }
+    footer .foot-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+    footer a { color: #b7c5d9; text-decoration: none; }
+    .toast { position: fixed; z-index: 10; right: 20px; bottom: 20px; padding: 12px 15px; border: 1px solid rgba(101,230,207,.4); border-radius: 11px; color: var(--text); background: #122237; box-shadow: var(--shadow); font-size: 12px; opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    @media (max-width: 900px) { .cards { grid-template-columns: repeat(2,minmax(0,1fr)); } .fields { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 28px, 1160px); }
+      .topbar { height: 65px; }
+      .nav { gap: 12px; font-size: 11px; }
+      .nav a:nth-child(2) { display: none; }
+      .nav .github-link { padding: 7px 9px; }
+      .brand { gap: 8px; font-size: 12px; }
+      .brand-mark { width: 34px; height: 34px; }
+      .hero { padding: 62px 0 33px; }
+      .hero:after { right: -290px; }
+      .hero-metrics { gap: 17px; }
+      .notice { margin-bottom: 43px; padding: 16px; }
+      .section-head { display: block; }
+      .builder { margin-bottom: 58px; padding: 18px; border-radius: 17px; }
+      .builder-top { display: block; }
+      .builder-tag { display: inline-block; margin-top: 12px; }
+      .fields { grid-template-columns: 1fr; }
+      .catalog-tools { grid-template-columns: 1fr; }
+      .count { text-align: left; }
+      .cards, .recipe-grid { grid-template-columns: 1fr; }
+      .retired ul { grid-template-columns: 1fr; }
+      .card p { min-height: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *:before, *:after { transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Google Dorking Playbook home">
+        <span class="brand-mark">YAF</span>
+        <span>Search Playbook<small>by Younes Ait Faraji</small></span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#builder">Query builder</a>
+        <a href="#operators">Operators</a>
+        <a class="github-link" href="https://github.com/Unes27/google-dorking-cheatsheet">GitHub ↗</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <p class="eyebrow">Advanced search · responsible research</p>
+        <h1>Google dorking,<br><span>made precise.</span></h1>
+        <p class="hero-copy">A searchable field guide to Google operators, advanced query patterns, and authorized website reviews. Build a query, copy it, and open it directly in Google.</p>
+        <p class="hero-byline">Created and curated by <a href="https://github.com/Unes27">Younes Ait Faraji</a></p>
+        <div class="hero-actions">
+          <a class="button primary" href="#builder">Build a query <span aria-hidden="true">↓</span></a>
+          <a class="button" href="#operators">Browse all operators</a>
+        </div>
+        <div class="hero-metrics" aria-label="Guide details">
+          <div class="metric"><strong id="operator-count">—</strong><span>search patterns</span></div>
+          <div class="metric"><strong>Official + community</strong><span>reliability clearly labeled</span></div>
+          <div class="metric"><strong>Client-side only</strong><span>queries stay in your browser</span></div>
+        </div>
+      </section>
+
+      <aside class="notice" aria-label="Responsible use notice">
+        <div class="notice-icon" aria-hidden="true">!</div>
+        <div><strong>Use only on sites you own or are authorized to review.</strong><p>Search results are clues, not permission to access, download, test, or share a page. This playbook focuses on public research and defensive site hygiene; it does not include queries for credentials, personal records, or private system access.</p></div>
+      </aside>
+
+      <section class="builder" id="builder">
+        <div class="builder-top">
+          <div>
+            <p class="section-kicker">Interactive workspace</p>
+            <h2>Build an advanced query</h2>
+            <p class="section-description">Combine a domain with a path, phrase, file type, title or URL term, and date range. The query updates as you type.</p>
+          </div>
+          <span class="builder-tag">Runs in your browser</span>
+        </div>
+        <div class="fields">
+          <div class="field"><label for="domain">Authorized domain <span>required</span></label><input id="domain" value="example.com" autocomplete="url" spellcheck="false" placeholder="example.com"></div>
+          <div class="field"><label for="path">URL path <span>optional</span></label><input id="path" spellcheck="false" placeholder="docs/ or /blog/"></div>
+          <div class="field"><label for="phrase">Exact phrase <span>optional</span></label><input id="phrase" placeholder="installation guide"></div>
+          <div class="field"><label for="filetype">File type <span>optional</span></label><select id="filetype"><option value="">Any page</option><option>pdf</option><option>docx</option><option>xlsx</option><option>pptx</option><option>csv</option><option>txt</option><option>xml</option></select></div>
+          <div class="field"><label for="title-term">Title contains <span>community pattern</span></label><input id="title-term" spellcheck="false" placeholder="guide"></div>
+          <div class="field"><label for="url-term">URL contains <span>community pattern</span></label><input id="url-term" spellcheck="false" placeholder="help"></div>
+          <div class="field"><label for="after-date">Updated after <span>optional</span></label><input id="after-date" type="date"></div>
+          <div class="field"><label for="before-date">Updated before <span>optional</span></label><input id="before-date" type="date"></div>
+        </div>
+        <div class="preview-label"><span>Query preview</span><span id="domain-state">Ready</span></div>
+        <div class="preview" id="preview" aria-live="polite">site:example.com</div>
+        <div class="builder-actions">
+          <button class="button primary" id="search-built" type="button">Search Google ↗</button>
+          <button class="button" id="copy-built" type="button">Copy query</button>
+          <button class="button" id="reset-builder" type="button">Reset</button>
+        </div>
+        <p class="field-note">Use a domain you own or have permission to assess. Google may interpret advanced terms differently, and results are never a complete inventory.</p>
+      </section>
+
+      <section class="catalog" id="operators">
+        <div class="section-head">
+          <div><p class="section-kicker">Operator library</p><h2>Commands &amp; patterns</h2><p class="section-description">Search and filter the command list. “Google documented” means current Google help or Search Central documents it; community patterns can change or be ignored.</p></div>
+        </div>
+        <div class="catalog-tools">
+          <div class="search-wrap"><input class="search-input" id="filter-search" type="search" placeholder="Find an operator, use, or example…" aria-label="Search operators"></div>
+          <div class="count" id="result-count" aria-live="polite"></div>
+        </div>
+        <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
+        <div class="cards" id="cards"></div>
+      </section>
+
+      <section class="recipes" id="recipes">
+        <div class="section-head"><div><p class="section-kicker">Put it together</p><h2>Advanced audit recipes</h2><p class="section-description">These examples keep the search scoped to a replaceable domain. Review only systems you own or have permission to assess.</p></div></div>
+        <div class="recipe-grid" id="recipe-grid"></div>
+      </section>
+
+      <section class="retired" id="retired">
+        <p class="section-kicker">Avoid stale lists</p>
+        <h2>Retired or unreliable commands</h2>
+        <p>Many online dork lists mix old features with current search syntax. These are not dependable commands in Google Search:</p>
+        <ul>
+          <li><code>cache:</code> — removed; no longer works in Google Search.</li>
+          <li><code>related:</code> — removed from Google's supported operator documentation.</li>
+          <li><code>info:</code> and <code>link:</code> — widely circulated, but unreliable or unsupported.</li>
+          <li>Leading <code>+</code> and <code>~</code> — legacy advice; do not rely on them for inclusion or synonym behavior.</li>
+        </ul>
+        <p>Google does not publish a complete catalog of every query pattern people call a “dork.” Use the labels above, test a small query, and verify important findings in the live site or Search Console.</p>
+      </section>
+
+      <section class="sources" aria-label="Official references">
+        <a class="source-link" href="https://support.google.com/websearch/answer/2466433" target="_blank" rel="noopener noreferrer">Google Search Help: refine searches ↗</a>
+        <a class="source-link" href="https://developers.google.com/search/docs/monitor-debug/search-operators" target="_blank" rel="noopener noreferrer">Google Search Central: operators ↗</a>
+        <a class="source-link" href="https://developers.google.com/search/docs/monitor-debug/search-operators/all-search-site" target="_blank" rel="noopener noreferrer">Google Search Central: site: ↗</a>
+        <a class="source-link" href="https://developers.google.com/search/docs/monitor-debug/search-operators/image-search" target="_blank" rel="noopener noreferrer">Google Images operators ↗</a>
+      </section>
+    </main>
+
+    <footer><div class="foot-inner"><span>© <span id="year"></span> Younes Ait Faraji · Google Dorking Playbook</span><span>Open source · <a href="https://github.com/Unes27/google-dorking-cheatsheet">view the repository ↗</a></span></div></footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite">Copied to clipboard</div>
+  <script>
+    const operators = [
+      { name: "Search a domain", syntax: "site:domain", category: "Core", trust: "Google documented", query: "site:{{domain}}", description: "Limit results to a domain or its subdomains.", search: "domain site operator" },
+      { name: "Search a URL prefix", syntax: "site:https://domain/path/", category: "Core", trust: "Google documented", query: "site:https://{{domain}}/docs/", description: "Scope to URLs that begin with a specific protocol, host, and path.", search: "URL prefix site operator" },
+      { name: "Exact phrase", syntax: '"phrase"', category: "Core", trust: "Google Help", query: 'site:{{domain}} "installation guide"', description: "Look for a phrase as written. Results can still vary by query and indexing.", search: "exact phrase quotes" },
+      { name: "Exclude a term", syntax: "-word", category: "Core", trust: "Google Help", query: "site:{{domain}} support -careers", description: "Remove results containing a word or quoted phrase.", search: "exclude minus term" },
+      { name: "Choose one term", syntax: "OR", category: "Query logic", trust: "Common · varies", query: "site:{{domain}} pricing OR plans", description: "Search for either term. Write OR in uppercase; for clarity, split complex logic into separate searches.", search: "either term boolean" },
+      { name: "Find a file type", syntax: "filetype:pdf", category: "Time & files", trust: "Google documented", query: "site:{{domain}} filetype:pdf", description: "Find results of a chosen file type. Review only documents intended to be public.", search: "pdf document type" },
+      { name: "Search after a date", syntax: "after:YYYY-MM-DD", category: "Time & files", trust: "Google Help", query: "site:{{domain}} after:2025-01-01", description: "Narrow results to content Google dates after a date. Date interpretation is approximate.", search: "date newer after" },
+      { name: "Search before a date", syntax: "before:YYYY-MM-DD", category: "Time & files", trust: "Google Help", query: "site:{{domain}} before:2024-01-01", description: "Narrow results to content Google dates before a date. Verify the page itself.", search: "date older before" },
+      { name: "Combine a date range", syntax: "after:… before:…", category: "Time & files", trust: "Google Help", query: "site:{{domain}} after:2024-01-01 before:2025-01-01", description: "Use both date refinements to focus on a time window.", search: "date range" },
+      { name: "Match a title term", syntax: "intitle:word", category: "Page targeting", trust: "Common · varies", query: "site:{{domain}} intitle:guide", description: "Common pattern for narrowing results by a word in the page title.", search: "title heading" },
+      { name: "Match all title terms", syntax: "allintitle: words", category: "Page targeting", trust: "Common · varies", query: "site:{{domain}} allintitle: accessibility guide", description: "Common pattern that tries to place all following words in the title.", search: "title heading" },
+      { name: "Match a URL term", syntax: "inurl:word", category: "Page targeting", trust: "Common · varies", query: "site:{{domain}} inurl:docs", description: "Common pattern for finding URLs containing a word or path fragment.", search: "url path" },
+      { name: "Match all URL terms", syntax: "allinurl: words", category: "Page targeting", trust: "Common · varies", query: "site:{{domain}} allinurl: help policy", description: "Common pattern that tries to match every following word in the URL.", search: "url path" },
+      { name: "Match text on a page", syntax: "intext:word", category: "Page targeting", trust: "Common · varies", query: 'site:{{domain}} intext:"shipping and returns"', description: "Common pattern for narrowing results by visible page text.", search: "page text content" },
+      { name: "Match all text terms", syntax: "allintext: words", category: "Page targeting", trust: "Common · varies", query: "site:{{domain}} allintext: accessibility support", description: "Common pattern that tries to include every following word in page text.", search: "page text content" },
+      { name: "Phrase wildcard", syntax: '"word * word"', category: "Query logic", trust: "Common · varies", query: 'site:{{domain}} "built for * teams"', description: "A wildcard is sometimes used for an unknown word inside a quoted phrase.", search: "wildcard placeholder" },
+      { name: "Proximity search", syntax: "AROUND(n)", category: "Query logic", trust: "Common · varies", query: "site:{{domain}} accessibility AROUND(3) guide", description: "Often circulated for nearby terms. Availability and interpretation can change.", search: "near proximity words" },
+      { name: "Numeric range", syntax: "n..m", category: "Query logic", trust: "Common · varies", query: "site:{{domain}} product 2022..2025", description: "The two-dot form is sometimes used for a number range; test before relying on it.", search: "number range years" },
+      { name: "Google Images: image source", syntax: "src:image-URL", category: "Images", trust: "Images only", query: "src:https://{{domain}}/media/logo.png", description: "Find pages referencing an image URL in its image source. Works in Google Images only.", search: "image source hotlink" },
+      { name: "Google Images: dimensions", syntax: "imagesize:WxH", category: "Images", trust: "Images only", query: "site:https://{{domain}}/ imagesize:1200x800", description: "Find images of a specific width and height. Works in Google Images only.", search: "image dimensions" },
+      { name: "Scope + type + phrase", syntax: "site: + filetype: + quotes", category: "Combinations", trust: "Mixed", query: 'site:{{domain}}/docs/ filetype:pdf "user guide"', description: "Layer a URL prefix, document type, and exact phrase for a focused public-document review.", search: "combine scope type phrase" },
+      { name: "Scope + title + URL", syntax: "site: + intitle: + inurl:", category: "Combinations", trust: "Common · varies", query: "site:{{domain}} intitle:guide inurl:docs", description: "Combine page-targeting patterns to find help or documentation pages on an authorized site.", search: "combine title url" }
+    ];
+
+    const recipes = [
+      { title: "Inventory public PDFs", text: "Review only files intended for public access. Repeat with docx, xlsx, pptx, csv, or xml when relevant.", query: "site:{{domain}} filetype:pdf" },
+      { title: "Review a documentation section", text: "Add a URL prefix and a phrase used in the published documentation.", query: 'site:https://{{domain}}/docs/ "installation"' },
+      { title: "Find older public content", text: "Use date refinements to locate pages that may need review; check the actual page date.", query: 'site:{{domain}} after:2021-01-01 before:2024-01-01 "product name"' },
+      { title: "Review page titles and paths", text: "Common title and URL patterns can help find content groups, but their behavior is not guaranteed.", query: "site:{{domain}} intitle:guide inurl:help" },
+      { title: "Check for staging labels", text: "Run this only against your own domain. If a result appears, secure the environment at the source.", query: "site:{{domain}} inurl:staging OR inurl:dev OR inurl:test" },
+      { title: "Check public directory listings", text: "Use only on a domain you administer. Disable unintended listings in the hosting configuration.", query: 'site:{{domain}} intitle:"index of"' },
+      { title: "Find placeholder copy", text: "Search for common launch placeholders on your own site before or after release.", query: 'site:{{domain}} "under construction" OR "coming soon" OR "lorem ipsum"' },
+      { title: "Find image reuse", text: "Google Images can help identify other indexed pages that reference an image hosted on your site.", query: "src:https://{{domain}}/media/logo.png", imagesOnly: true }
+    ];
+
+    const categories = ["All", ...new Set(operators.map(item => item.category))];
+    let activeCategory = "All";
+    const domainInput = document.getElementById("domain");
+    const preview = document.getElementById("preview");
+    const domainState = document.getElementById("domain-state");
+    const toast = document.getElementById("toast");
+    let toastTimer;
+
+    function validDomain() {
+      let value = domainInput.value.trim().toLowerCase();
+      value = value.replace(/^https?:\/\//, "").split(/[/?#]/)[0].replace(/:\d+$/, "");
+      const valid = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(value);
+      domainState.textContent = valid ? "Ready" : "Enter a valid hostname";
+      domainState.classList.toggle("invalid", !valid);
+      return valid ? value : null;
+    }
+
+    function buildQuery() {
+      const domain = validDomain() || "example.com";
+      const path = document.getElementById("path").value.trim().replace(/^\/+|\/+$/g, "").replace(/[^a-zA-Z0-9._~!$&'()*+,;=:@%-]/g, "");
+      const phrase = document.getElementById("phrase").value.trim().replace(/["\\]/g, "");
+      const filetype = document.getElementById("filetype").value;
+      const title = document.getElementById("title-term").value.trim().replace(/\s+/g, " ").replace(/[^a-zA-Z0-9_-]/g, "");
+      const urlTerm = document.getElementById("url-term").value.trim().replace(/\s+/g, " ").replace(/[^a-zA-Z0-9_/-]/g, "");
+      const after = document.getElementById("after-date").value;
+      const before = document.getElementById("before-date").value;
+      const parts = [`site:${path ? `https://${domain}/${path}/` : domain}`];
+      if (phrase) parts.push(`"${phrase}"`);
+      if (filetype) parts.push(`filetype:${filetype}`);
+      if (title) parts.push(`intitle:${title}`);
+      if (urlTerm) parts.push(`inurl:${urlTerm}`);
+      if (after) parts.push(`after:${after}`);
+      if (before) parts.push(`before:${before}`);
+      return parts.join(" ");
+    }
+
+    function currentDomain() { return validDomain() || "example.com"; }
+    function escapeHTML(value) { return String(value).replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[char])); }
+    function shownQuery(query) { return query.replaceAll("{{domain}}", currentDomain()); }
+
+    function renderFilters() {
+      document.getElementById("filters").innerHTML = categories.map(category => `<button class="filter ${activeCategory === category ? "active" : ""}" type="button" data-category="${escapeHTML(category)}" aria-pressed="${activeCategory === category}">${escapeHTML(category)}</button>`).join("");
+      document.querySelectorAll(".filter").forEach(button => button.addEventListener("click", () => { activeCategory = button.dataset.category; renderFilters(); renderCards(); }));
+    }
+
+    function renderCards() {
+      const search = document.getElementById("filter-search").value.trim().toLowerCase();
+      const shown = operators.filter(item => (activeCategory === "All" || item.category === activeCategory) && `${item.name} ${item.syntax} ${item.description} ${item.query} ${item.search}`.toLowerCase().includes(search));
+      document.getElementById("result-count").textContent = `${shown.length} of ${operators.length} patterns`;
+      document.getElementById("operator-count").textContent = `${operators.length}+`;
+      document.getElementById("cards").innerHTML = shown.length ? shown.map((item, index) => {
+        const query = shownQuery(item.query);
+        const badgeClass = item.trust.includes("varies") ? "badge varies" : item.trust.includes("Images") ? "badge image" : "badge";
+        const googleURL = item.category === "Images" ? `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}` : `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        const searchLabel = item.category === "Images" ? "Search Images ↗" : "Search Google ↗";
+        return `<article class="card"><div class="card-top"><h3>${escapeHTML(item.name)}</h3><span class="${badgeClass}">${escapeHTML(item.trust)}</span></div><span class="syntax">${escapeHTML(item.syntax)}</span><p>${escapeHTML(item.description)}</p><div class="query" id="query-${index}">${escapeHTML(query)}</div><div class="card-actions"><button class="small-button copy" type="button" data-copy="${escapeHTML(query)}">Copy query</button><a class="small-button" href="${googleURL}" target="_blank" rel="noopener noreferrer">${searchLabel}</a></div></article>`;
+      }).join("") : `<div class="empty">No matching patterns. Try another term or category.</div>`;
+    }
+
+    function renderRecipes() {
+      document.getElementById("recipe-grid").innerHTML = recipes.map((recipe, index) => {
+        const query = shownQuery(recipe.query);
+        const googleURL = recipe.imagesOnly ? `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}` : `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        const searchLabel = recipe.imagesOnly ? "Search Images ↗" : "Search Google ↗";
+        return `<article class="recipe"><h3>${escapeHTML(recipe.title)}</h3><p>${escapeHTML(recipe.text)}</p><code>${escapeHTML(query)}</code><div class="card-actions"><button class="small-button copy" type="button" data-copy="${escapeHTML(query)}">Copy query</button><a class="small-button" href="${googleURL}" target="_blank" rel="noopener noreferrer">${searchLabel}</a></div></article>`;
+      }).join("");
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        toast.textContent = "Query copied to clipboard";
+      } catch {
+        const helper = document.createElement("textarea");
+        helper.value = text; helper.style.position = "fixed"; helper.style.opacity = "0"; document.body.appendChild(helper); helper.select();
+        document.execCommand("copy"); helper.remove(); toast.textContent = "Query copied to clipboard";
+      }
+      toast.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("button[data-copy]");
+      if (button) copyText(button.dataset.copy);
+    });
+
+    function updatePreview() { preview.textContent = buildQuery(); renderCards(); renderRecipes(); }
+    document.querySelectorAll("#builder input, #builder select").forEach(input => input.addEventListener("input", updatePreview));
+    document.getElementById("filter-search").addEventListener("input", renderCards);
+    document.getElementById("search-built").addEventListener("click", () => {
+      if (!validDomain()) { domainInput.focus(); return; }
+      window.open(`https://www.google.com/search?q=${encodeURIComponent(buildQuery())}`, "_blank", "noopener,noreferrer");
+    });
+    document.getElementById("copy-built").addEventListener("click", () => copyText(buildQuery()));
+    document.getElementById("reset-builder").addEventListener("click", () => {
+      domainInput.value = "example.com";
+      ["path", "phrase", "title-term", "url-term", "after-date", "before-date"].forEach(id => document.getElementById(id).value = "");
+      document.getElementById("filetype").value = "";
+      updatePreview();
+    });
+    document.getElementById("year").textContent = new Date().getFullYear();
+    renderFilters(); updatePreview();
+  </script>
+</body>
+</html>

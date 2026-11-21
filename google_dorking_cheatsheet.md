@@ -1,9 +1,22 @@
-# Google Dorking & Search Operators Cheat Sheet
+# 🔎 Google Dorking Cheat Sheet
 
-> A practical reference for focused Google searches, public information research, and defensive review of websites you own or are authorized to assess. Google does not publish a complete list of every query pattern people call a “dork”; undocumented behavior can change.
+### A practical field guide by [Younes Ait Faraji](https://github.com/Unes27)
 
-**Last checked:** 2026-11-21  
-**Example domain:** `example.com` — replace it with a domain you own or have written permission to review.
+Google search operators · practical query patterns · defensive site review
+
+**[Launch the interactive playbook](https://unes27.github.io/google-dorking-cheatsheet/)** · [View the source Markdown](./google_dorking_cheatsheet.md)
+
+[![GitHub stars](https://img.shields.io/github/stars/Unes27/google-dorking-cheatsheet?style=flat-square)](https://github.com/Unes27/google-dorking-cheatsheet/stargazers)
+[![Last commit](https://img.shields.io/github/last-commit/Unes27/google-dorking-cheatsheet?style=flat-square)](https://github.com/Unes27/google-dorking-cheatsheet/commits/main)
+
+> [!IMPORTANT]
+> Use domain-scoped audit queries only on websites you own or have explicit permission to assess. Search results are clues, not permission to access or share underlying content. This guide is for responsible research and defensive review.
+
+A practical reference for focused Google searches and public information research. Google does not publish a complete list of every pattern people call a “dork,” and undocumented behavior can change.
+
+**Last checked:** 2026-11-21 · **Example domain:** `example.com` — replace it with a domain you own or have written permission to review.
+
+---
 
 ## Responsible use
 
@@ -18,11 +31,12 @@
 1. [Quick start](#quick-start)
 2. [Operator reference](#operator-reference)
 3. [Useful query patterns](#useful-query-patterns)
-4. [Google Images operators](#google-images-operators)
-5. [Combining and troubleshooting queries](#combining-and-troubleshooting-queries)
-6. [Retired and unreliable operators](#retired-and-unreliable-operators)
-7. [A safe review workflow](#a-safe-review-workflow)
-8. [Official references](#official-references)
+4. [Advanced combinations and audit recipes](#advanced-combinations-and-audit-recipes)
+5. [Google Images operators](#google-images-operators)
+6. [Combining and troubleshooting queries](#combining-and-troubleshooting-queries)
+7. [Retired and unreliable operators](#retired-and-unreliable-operators)
+8. [A safe review workflow](#a-safe-review-workflow)
+9. [Official references](#official-references)
 
 ## Quick start
 
@@ -176,6 +190,83 @@ site:example.edu marine biology
 ```
 
 Check the source page, date, and context before citing or relying on a result.
+
+## Advanced combinations and audit recipes
+
+Add one refinement at a time. These combinations help organize authorized site reviews; they are not guaranteed to return every matching page.
+
+### Combine scope, file type, phrase, and date
+
+```text
+site:https://example.com/docs/ filetype:pdf "installation guide" after:2024-01-01
+site:example.com filetype:pdf after:2025-01-01 before:2026-01-01
+```
+
+The first query focuses on a documentation URL prefix, a public PDF, a phrase, and a date. The second asks for PDFs within a date interval. Search dates are approximate, so check the page itself.
+
+### Combine title and URL refinements
+
+These commonly used refinements are not fully documented by Google and may behave differently over time:
+
+```text
+site:example.com intitle:guide inurl:help
+site:example.com allintitle: accessibility support
+site:example.com intext:"shipping and returns" -careers
+```
+
+Use these to review your own content organization. Treat them as hints, not precise filters.
+
+### Review subdomains and URL sections
+
+```text
+site:docs.example.com "getting started"
+site:status.example.com "service status"
+site:https://example.com/support/ filetype:pdf
+```
+
+Replace each host or path with one that is in scope. A `site:` query is not an exhaustive inventory.
+
+### Audit your own site for unfinished or non-production pages
+
+```text
+site:example.com inurl:staging
+site:example.com inurl:dev
+site:example.com inurl:test
+site:example.com "under construction" OR "coming soon"
+```
+
+Only run these checks against a site you own or are authorized to review. If a result is unexpected, secure or remove it at the source. Search visibility controls do not replace access controls.
+
+### Check for unintended directory listings on your own site
+
+```text
+site:example.com intitle:"index of"
+```
+
+This is a commonly used pattern, not a guarantee. If you find an unintended listing on your own infrastructure, disable directory browsing in the server or hosting configuration.
+
+### Review a set of intended-public document types
+
+Run one file type per search to keep results easy to review:
+
+```text
+site:example.com filetype:pdf
+site:example.com filetype:docx
+site:example.com filetype:xlsx
+site:example.com filetype:pptx
+```
+
+Confirm that each document is meant to be public. Do not use this guide to search for private records, credentials, tokens, or other sensitive material.
+
+### Research public sources
+
+```text
+site:who.int climate report filetype:pdf
+site:docs.python.org "asyncio task"
+site:example.edu marine biology after:2023-01-01
+```
+
+Check the original page, publication date, and context before citing a result.
 
 ## Google Images operators
 
