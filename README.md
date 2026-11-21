@@ -84,9 +84,11 @@ These are widely used in search examples, but Google’s current public operator
 | `intitle:word` | Search for a word in a result title. | `site:example.com intitle:guide` |
 | `inurl:word` | Search for a word in a result URL. | `site:example.com inurl:blog` |
 | `intext:word` | Search for a word in page text. | `site:example.com intext:accessibility` |
+| `inanchor:word` | Common pattern for searching link anchor text. | `site:example.com inanchor:documentation` |
 | `allintitle: words` | Commonly used to require several title terms. | `site:example.com allintitle: product guide` |
 | `allinurl: words` | Commonly used to require several URL terms. | `site:example.com allinurl: products help` |
 | `allintext: words` | Commonly used to require several page-text terms. | `site:example.com allintext: shipping returns` |
+| `allinanchor: words` | Common pattern for requiring several link anchor terms. | `site:example.com allinanchor: user guide` |
 | `OR` | Commonly used to search for either term; write it in uppercase. | `site:example.com pricing OR plans` |
 | `*` | Sometimes used as a word placeholder inside a quoted phrase. | `site:example.com "built for * teams"` |
 | `AROUND(n)` | Sometimes used to find terms near each other. | `site:example.com performance AROUND(3) report` |
@@ -294,6 +296,7 @@ These do not work as general web-search filters. Availability and result behavio
 - **`cache:`** no longer works in Google Search.
 - **`related:`** was removed from Google's search-operator documentation as unsupported.
 - **`link:`**, **`info:`**, and many other lists copied online may be obsolete or unreliable. Do not rely on them without checking current behavior.
+- **`ext:`** appears in older lists as an alternate to `filetype:`; prefer Google's documented `filetype:` form.
 - **`intitle:`**, **`inurl:`**, `OR`, wildcards, and proximity syntax are commonly circulated but are not all included in Google's current public operator reference. Results can vary.
 
 Google's documented operator set is selective. This cheat sheet separates documented refinements from commonly used patterns so readers can judge reliability.
